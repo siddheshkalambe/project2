@@ -3,9 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sample code</title>
+    <title>Food Donation Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+        }
+        nav a {
+            margin: 0 1rem;
+            text-decoration: none;
+            color: #007bff;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem auto;
+            max-width: 400px;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-container input, .form-container select, .form-container button {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-container button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    
+
+<header>
+    <h1>Food Donation Platform</h1>
+</header>
+
+<nav>
+    <a href="#" onclick="showPage('login')">Login / Sign Up</a>
+</nav>
+
+<main id="content">
+    <!-- Dynamic Content Will Be Injected Here -->
+</main>
+
+<footer>
+    <p>&copy; 2024 Food Donation Platform. All rights reserved.</p>
+</footer>
+
+<script>
+    // Function to display the corresponding page content based on the link clicked
+    function showPage(page) {
+        let content = '';
+        
+        if (page === 'login') {
+            content = `
+                <h2>Login / Sign Up</h2>
+                <div class="form-container">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                    <input type="email" id="signup-email" placeholder="Email Address" required>
+                    <input type="text" id="signup-org" placeholder="Organization Name (Optional)">
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <button onclick="submitSignup()">Sign Up</button>
+                </div>
+            `;
+        } else if (page === 'roleSelection') {
+            content = `
+                <h2>Select Your Role</h2>
+                <button onclick="showDonorDetails()">I am a Donor</button>
+                <button onclick="alert('Recipient functionality coming soon!')">I am a Recipient</button>
+            `;
+        } else if (page === 'donorDetails') {
+            content = `
+                <h2>Donor Details</h2>
+                <div class="form-container">
+                    <select id="donor-type" required>
+                        <option value="" disabled selected>Select Donor Type</option>
+                        <option value="restaurant">Restaurant</option>
+                        <option value="catering">Catering Service</option>
+                        <option value="event">Event Organizer</option>
+                    </select>
+                    <input type="text" id="donor-name" placeholder="Donor Name" required>
+                    <input type="text" id="donor-org" placeholder="Organization Name" required>
+                    <input type="text" id="donor-location" placeholder="Location" required>
+                    <input type="file" id="food-picture" accept="image/*" required>
+                    <input type="number" id="food-quantity" placeholder="Food Quantity" required>
+                    <button onclick="submitDonorInfo()">Submit Donor Details</button>
+                </div>
+            `;
+        }
+
+        // Inject the content into the main section
+        document.getElementById('content').innerHTML = content;
+    }
+
+    // Default page to show (Login)
+    showPage('login');
+
+    // Handle signup and store data in local storage
+    function submitSignup() {
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const org = document.getElementById('signup-org').value;
+        const password = document.getElementById('signup-password').value;
+
+        if (name && email && password) {
+            const userData = {
+                name,
+                email,
+                organization: org,
+                password
+            };
+            localStorage.setItem('userData', JSON.stringify(userData));
+            alert('Sign up successful!');
+            showPage('roleSelection');
+        } else {
+            alert('Please fill out all required fields.');
+        }
+    }
+
+    // Show Donor Details Form
+    function showDonorDetails() {
+        showPage('donorDetails');
+    }
+
+    // Submit Donor Details
+    function submitDonorInfo() {
+        const donorType = document.getElementById('donor-type').value;
+        const donorName = document.getElementById('donor-name').value;
+        const donorOrg = document.getElementById('donor-org').value;
+        const donorLocation = document.getElementById('donor-location').value;
+        const foodPicture = document.getElementById('food-picture').files[0];
+        const foodQuantity = document.getElementById('food-quantity').value;
+
+        if (!donorType || !donorName || !donorOrg || !donorLocation || !foodQuantity) {
+            alert('Please fill out all required fields.');
+            return;
+        }
+
+        const donorInfo = {
+            donorType,
+            donorName,
+            donorOrg,
+            donorLocation,
+            foodPicture: foodPicture.name,
+            foodQuantity
+        };
+
+        // Save Donor Info in localStorage (Simulating Backend Storage)
+        localStorage.setItem('donorInfo', JSON.stringify(donorInfo));
+
+        alert('Donor details submitted successfully!');
+        // Show the saved data or go to another page
+        showDonorSummary(donorInfo);
+    }
+
+    // Show Donor Information Summary
+    function showDonorSummary(donorInfo) {
+        const content = `
+            <h2>Your Donor Information</h2>
+            <p>Donor Type: ${donorInfo.donorType}</p>
+            <p>Donor Name: ${donorInfo.donorName}</p>
+            <p>Organization: ${donorInfo.donorOrg}</p>
+            <p>Location: ${donorInfo.donorLocation}</p>
+            <p>Food Quantity: ${donorInfo.foodQuantity}</p>
+            <p>Food Image: ${donorInfo.foodPicture}</p>
+            <button onclick="showPage('home')">Go to Home</button>
+        `;
+        document.getElementById('content').innerHTML = content;
+    }
+</script>
+
 </body>
 </html>
